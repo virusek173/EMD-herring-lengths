@@ -3,21 +3,29 @@ title: "Herringmania"
 output: html_document
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+## Wstępne działania na danych
+### Wczytanie danych z pliku
+Sprawdzenie ile jest zer w każdej kolumnie, 
+usunięcie lub zastąpieniedanych z ubytkami,
+Pogrupowanie po wszystkich powtarzających się kolumnach w ramach łowiska, - zauważyliśmy, że wartości się powtarzają
+Jeśli za mało to jesdnak zrezygnować i działać nacałości
+```{r dplyr}
+fileName = "data/sledzie.csv"
+herrings = read.csv(fileName, header = TRUE, sep = ",", dec = ".")
+# group <- herrings %>% group_by(sst, sal, nao)
+# filteredData <- filter(herrings, !is.na(sal))
+# sapply(herrings, class)
 
-## R Markdown
+head(herrings)
+dim(herrings)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+## Marcin's workshop
 
 You can also embed plots, for example:
 
