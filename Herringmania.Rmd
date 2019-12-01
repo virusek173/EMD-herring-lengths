@@ -6,23 +6,115 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
 ```
-## Wstępne działania na danych
-### Wczytanie danych z pliku
-Sprawdzenie ile jest zer w każdej kolumnie, 
-usunięcie lub zastąpieniedanych z ubytkami,
-Pogrupowanie po wszystkich powtarzających się kolumnach w ramach łowiska, - zauważyliśmy, że wartości się powtarzają
-Jeśli za mało to jesdnak zrezygnować i działać nacałości
+## Wstępna analiza danych
+
+##### Wczytanie danych oraz określenie rozmiaru:
 ```{r dplyr}
 fileName = "data/sledzie.csv"
 herrings = read.csv(fileName, header = TRUE, sep = ",", dec = ".")
-# group <- herrings %>% group_by(sst, sal, nao)
-# filteredData <- filter(herrings, !is.na(sal))
-# sapply(herrings, class)
+dimentions <- dim(herrings)
+dimentions
+```
+Mamy do czynienia z danymi mającymi 16 zmiennych oraz 52582 przypadków do analizy.
 
-head(herrings)
-dim(herrings)
+##### Wypisanie nazw kolumn oraz pierwszego wiersza:
+```{r}
+head(herrings, n=1)
+```
+Widzimy, że z powodu braku nazwy pierwszej kolumny, została ona zastąpiona znakiem X. Akceptujemy to uzupełnienie pamiętając, aby w przyszłości odwoływać się właśnie do tego znaku.
 
+##### Zamiana znaku "?" reprezentującego pustą wartość na <NA>:
+```{r}
+#herrings <- head(herrings, 6)
+herrings[herrings == "?"] <- NA
+```
+
+##### Sprawdzenie ile jest pustych wartości w każdej kolumnie:
+```{r}
+countNa <- sapply(herrings, function(x) sum(is.na(x)))
+countNa
+```
+
+##### Sprawdzenie ile jest pustych wartości razem:
+```{r}
+sumCountNa <- sum(countNa)
+sumCountNa
+```
+
+##### Sprawdzenie ile jest wierszy z pustymi wartościami. Wzięliśy pod uwagę tylko prawdopodobne kolumny:
+```{r}
+countBlackRows <- function(data) {
+  blankRows <- data %>% filter(is.na(cfin1) | is.na(cfin2) | is.na(chel1) | is.na(chel2) | is.na(lcop1) | is.na(lcop2) | is.na(sst))
+  blankRowsNumber <- count(blankRows)
+  blankRowsNumber
+}
+
+blankRowsNumber <- countBlackRows(herrings)
+blankRowsNumber
+```
+Tym razem Wyszło nam mniej niż w przypadku zsumowania wszytkich zer. Różnica ta wynika z tego, że niektóre wiersze mają więcej pustych wartości niż jedną.
+
+##### Sprawdzenie ile procent całości zajumją :
+```{r}
+percentage <- blankRowsNumber/dimentions[1] * 100
+round(percentage, 2)
+```
+Na podstaiwe powyższych obserwacji, zdecydowaliśmy się nie usuwać wierszy z pustymi wartościami, ponieważ usuniemy wtedy aż 19.2% całości danych. Taka ilość usuniętych danych na pewno wpłynęła by na wynik analizy zbioru. 
+
+Ponieważ wartości z kolumn z ubytkami powtarzają się wielokrotnie, postanowiliśmy zastosować prostą technikę, polegającą na zastąpieniu brakujących danych, wartościami sąsiednimi.
+
+##### Zastąpienie ubytków w danych sąsiednią wartością:
+```{r}
+completeData <- herrings %>% mutate(
+  cfin1 = case_when((is.na(cfin1) & !is.na(lag(cfin1))) ~ lag(cfin1), is.na(cfin1) ~ lead(cfin1), TRUE ~ cfin1),
+  cfin2 = case_when((is.na(cfin2) & !is.na(lag(cfin2))) ~ lag(cfin2), is.na(cfin2) ~ lead(cfin2), TRUE ~ cfin2),
+  chel1 = case_when((is.na(chel1) & !is.na(lag(chel1))) ~ lag(chel1), is.na(chel1) ~ lead(chel1), TRUE ~ chel1),
+  chel2 = case_when((is.na(chel2) & !is.na(lag(chel2))) ~ lag(chel2), is.na(chel2) ~ lead(chel2), TRUE ~ chel2),
+  lcop1 = case_when((is.na(lcop1) & !is.na(lag(lcop1))) ~ lag(lcop1), is.na(lcop1) ~ lead(lcop1), TRUE ~ lcop1),
+  lcop2 = case_when((is.na(lcop2) & !is.na(lag(lcop2))) ~ lag(lcop2), is.na(lcop2) ~ lead(lcop2), TRUE ~ lcop2),
+  sst = case_when((is.na(sst) & !is.na(lag(sst))) ~ lag(sst), is.na(sst) ~ lead(sst), TRUE ~ sst)
+)
+
+
+blankRowsNumber <- countBlackRows(completeData)
+blankRowsNumber
+```
+Widzimy, że zastąpienie wartości uzupełniło nam większość danych, ale nadal mamy 9 komórek bez wartości. Taką liczbę możemy już spokojnie usunąć.
+
+##### Usunięcie pozostałych wierszy:
+```{r}
+completeData <- completeData %>% filter_all(all_vars(!is.na(.)))
+
+blankRowsNumber <- countBlackRows(completeData)
+blankRowsNumber
+```
+Teraz już mamy kompletne dane, bez pustych wartości. Możemy zatem kontynuaować przetwarzanie.
+
+###### Zauważyliśmy, że większość danych w ramach jednego łowiska są identyczne, więc pogrupowaliśmy je po tych danych:
+```{r}
+groupedData <- completeData %>% group_by(cfin1, cfin2, chel1, chel2, lcop1, lcop2, fbar, recr, cumf, totaln, sst, sal, nao)
+groupedData
+```
+W taki sposób uzyskaliśmy pogrupowane dane do 557 wierszy, liczba ta powinna odpowiadać iości łowisk.
+
+##### Funkcja mapująca indeks na rok:
+```{r}
+mapIndexToYear <- function(index) {
+  maxIndex <- dim(herrings)[1]
+  
+  year = (index*60)/maxIndex
+  as.integer(year)
+  
+}
+
+mapIndexToYear(40000)
+```
+##### Wykres zależności rozmiaru śledzia w analizowanych latach:
+```{r}
+#completeData[["X"]]
+plot(mapIndexToYear(groupedData[["X"]]), groupedData[["length"]], cex = 0.5, main = "Wykres zależności rozmiaru śledzia w analizowanych latach", xlab = "Kolejne lata", ylab = "Rozmiar śledzia")
 ```
 
 ## R Markdown
