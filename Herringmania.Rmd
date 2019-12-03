@@ -7,6 +7,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
+
+install.packages("ggcorrplot") # Tylko przy 1szym odpaleniu
+library(ggcorrplot)
 ```
 ## Wstępna analiza danych
 
@@ -117,13 +120,52 @@ mapIndexToYear(40000)
 plot(mapIndexToYear(groupedData[["X"]]), groupedData[["length"]], cex = 0.5, main = "Wykres zależności rozmiaru śledzia w analizowanych latach", xlab = "Kolejne lata", ylab = "Rozmiar śledzia")
 ```
 
-## R Markdown
+## Złożoność kolumn
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+legend <- c(
+    "length: długość złowionego śledzia [cm]",
+    "cfin1: dostępność planktonu [zagęszczenie Calanus finmarchicus gat. 1]",
+    "cfin2: dostępność planktonu [zagęszczenie Calanus finmarchicus gat. 2]",
+    "chel1: dostępność planktonu [zagęszczenie Calanus helgolandicus gat. 1]",
+    "chel2: dostępność planktonu [zagęszczenie Calanus helgolandicus gat. 2]",
+    "lcop1: dostępność planktonu [zagęszczenie widłonogów gat. 1]",
+    "lcop2: dostępność planktonu [zagęszczenie widłonogów gat. 2]",
+    "fbar: natężenie połowów w regionie [ułamek pozostawionego narybku]",
+    "recr: roczny narybek [liczba śledzi]",
+    "cumf: łączne roczne natężenie połowów w regionie [ułamek pozostawionego narybku]",
+    "totaln: łączna liczba ryb złowionych w ramach połowu [liczba śledzi]",
+    "sst: temperatura przy powierzchni wody [°C]",
+    "sal: poziom zasolenia wody [Knudsen ppt]",
+    "xmonth: miesiąc połowu [numer miesiąca]",
+    "nao: oscylacja północnoatlantycka [mb]")
 
-```{r sledzie}
-MyData <- read.csv(file="sledzie.csv", header=TRUE, sep=",")
 
+fileName = "data/sledzie.csv"
+MyData <- read.csv(fileName, header = TRUE, sep = ",", dec = ".")
+names <- names(MyData)
+df <- sapply(MyData[, c(1:16)], as.numeric)
+
+for (i in c(1:16)) {
+  hist(df[,i],
+  main= paste("Wykres rozkładu kolumny",legend[i]),
+  xlab=names[i],
+  ylab = "Liczność",
+  col="darkmagenta",
+  freq=FALSE
+  )
+}
 ```
+
+
+## Korelacja pomiędzy zmiennymi
+
+```{r }
+res <- cor(herrings)
+round(res, 2)
+ggcorrplot(res)
+```
+
+
+
