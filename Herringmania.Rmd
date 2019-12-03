@@ -1,6 +1,6 @@
 ---
 title: "Herringmania"
-output: github_document
+output: html_document
 ---
 
 
@@ -128,6 +128,7 @@ plot(mapIndexToYear(groupedData[["X"]]), groupedData[["length"]], cex = 0.5, mai
 
 ```{r}
 legend <- c(
+    "indeks obserwacji - X",
     "length: długość złowionego śledzia [cm]",
     "cfin1: dostępność planktonu [zagęszczenie Calanus finmarchicus gat. 1]",
     "cfin2: dostępność planktonu [zagęszczenie Calanus finmarchicus gat. 2]",
@@ -150,10 +151,10 @@ df <- sapply(groupedData[, c(1:16)], as.numeric)
 for (x in c(1:4)){
   layout(matrix(c(1,2,3,4), 2, 2, byrow = TRUE))
   for (i in c(1:4)) {
-    hist(df[,i*x],
-    main= paste(" ",legend[i*x]),
-    cex.main = 0.7,
-    xlab=names[i*x],
+    hist(df[,4*x + i - 4],
+    main= paste(" ",legend[4*x + i - 4]),
+    cex.main = 0.62,
+    xlab=names[4*x + i - 4],
     ylab = "% Liczności",
     col="darkmagenta",
     freq=FALSE
@@ -163,7 +164,9 @@ for (x in c(1:4)){
 
 ```
 
-Niektóre rozkłady danych z jednej kategorii (kolumny) przypominają rozkład normlany mi. dane: dostępności planktonu, miesiącu połowy czy oscylacji północnoatlantyckiej. Wśród danych możemy też spotkać kolumny które mają cechy  wspomnianego rozkładu normalnego, lecz ciężko je nazwać podobnymi do niego. Są to mi. dostepność plankltonu, natężenie połowów w regionie, łączna liczba złowionych ryb, temperatura przy powierzchni wody.
+Niektóre rozkłady danych z jednej kategorii (kolumny) przypominają rozkład normlany mi. dane: długości śledzia, poziomu zasolenia wody czy miesiąca połowu.
+
+##### TODO skomentowac najdziwniejsze anomalie na wykresach
 
 ## Korelacja pomiędzy zmiennym
 
@@ -176,7 +179,7 @@ print(ggcorrplot(res, method = "circle"))
 Powyższa macierz korelacji przedstawia zależności pomiędzy każdą parą zmiennych. Przyjęty próg ważności obserwacji wynosi < -0.4 oraz > 0.4.
 Przefiltrujmy macierz i zobaczmy które z par należą do przedziału ważności.
 
-##### Filtracja głównie-skorelowanych zmiennych macierzy korelacji:
+##### Filtracja głównie skorelowanych zmiennych pozyskanych z macierzy korelacji:
 
 ```{r}
 pos_cor <- c(sort(unique(res[res > 0.4 & res != 1.0])))
@@ -191,7 +194,7 @@ Znalezione wartości korelacji negatywnej przekraczające próg:
 neg_cor
 ```
 
-Chcielbyśmy zobaczyć które pary zmiennych kryją się za wysokimi wartościami korelacji. W tym celu tworzymy funkcję która znajdzie parę w macierzy korelacji.
+Chcielbyśmy zobaczyć które pary zmiennych kryją się za odpowiednio wysokimi(niskimi) wartościami korelacji. W tym celu tworzymy funkcję która znajdzie szukaną parę.
 
 ```{r}
 show_pairs <- function(cor) {
@@ -217,11 +220,12 @@ Znalezione pary negatywnej korelacji:
 negative
 ```
 
-##### Analiza skorelowanych elementów
+##### Analiza skorelowanych elementów:
 
-##### Przegląd najbardziej skorelowanych par zmiennych:
-Pomijając autokorelację zmiennych (widoczną na przekątnej) z wykresu możemy zaobserwować wyróżniające się pary dodatniej korelacji:
-1. Wsp. kor: 0.40 cfin1:cfin2 (dostępność planktonu [zagęszczenie Calanus finmarchicus gat. 1] -  dostępność planktonu [zagęszczenie Calanus finmarchicus gat. 2];)
+Pomijamy autokorelację zmiennych (widoczną na przekątnej jako czerwone koło).
+
+##### Z wykresu możemy zaobserwować wyróżniające się pary dodatniej korelacji:
+1. Wsp. kor: 0.40 cfin1:cfin2 (dostępność planktonu [zagęszczenie Calanus finmarchicus gat. 1] -  dostępność planktonu [zagęszczenie Calanus finmarchicus gat. 2])
 2. Wsp. kor: 0.41 nao:X (oscylacja północnoatlantycka - indeks obserwacji)
 3. Wsp. kor: 0.52 nao:sst (oscylacja północnoatlantycka - temperatura przy powierzchni wody)
 4. Wsp. kor: 0.64 lcop1:chel1 (dostępność planktonu [zagęszczenie widłonogów gat. 1 - zagęszczenie Calanus helgolandicus gat. 1]
@@ -236,12 +240,12 @@ Pomijając autokorelację zmiennych (widoczną na przekątnej) z wykresu możemy
 5. Analogicznie jak pkt. 4 w przypadku gatunku nr 2 obu planktonów.
 6. Natężenie regionalne jest składową całościowego natężenia stąd wysoka korelacja jest czymś spodziewanym.
 
-Wyróżniające się pary ujemnej korelacji:
+##### Wyróżniające się pary ujemnej korelacji:
 7. Wsp. kor: -0.42 sst:length (temperatura przy powierzchni wody - długość złowionego śledzia)
 8. Wsp. kor: -0.50 totaln:fbar (łączna liczba ryb złowionych w ramach połowu - natężenie połowów w regionie)
 9. Wsp. kor: -0.70 totaln:cumf (łączna liczba ryb złowionych w ramach połowu - łączne roczne natężenie połowów w regionie [ułamek pozostawionego narybku])
 
-Ocena źródła korelacji:
+###### Ocena korelacji:
 7. Im temperatura wody jest cieplejsza tym wyławiany śledź jest mniejszy. Analogicznie gdy tempeatura wody spada, średnia długość śledzia rośnie.
 8. Im większe regionalne natężenie połowów w regionie, tym mniejsza jest liczba ryb łowionych w ramach połowu.
 9. Im większe całkowite natężenie połowów w regionie, tym mniejsza jest liczba ryb łowionych w ramach połowu.
@@ -270,9 +274,17 @@ softly_neg
 
 Przeglądając zbiór nieco mniej skorelowanych zmiennych można zauważyć, że średnia temperatura wody rośnie z czasem. Z drugiej strony liczba wyławianych śledzi jak i ich długość maleje z czasem. Ponadto rosnąca oscylacja atlantycka ma wpływ na zmniejszenie się zagęszczenia planktonu widłonogów gat. 2, Calanus helgolandicus gat. 2 oraz liczby wyławianych śledzi.
 
+## Obserwacje po łącznej analizie rozkładu danych i macierzy korelacji
+
+  -
+
+
 ## Konstrukcja regresora
+
+##### Podział zbioru danych na treningowy testowy i walidacyjny
 ```{r}
-#TODO
+
+
 ```
 
 
