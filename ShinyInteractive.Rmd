@@ -1,0 +1,51 @@
+---
+title: "Interaktywny Śledź"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
+fileName = "data/sledzie.csv"
+herrings = read.csv(fileName, header = TRUE, sep = ",", dec = ".")
+
+herr_vec <- herrings[["length"]]
+max <- dim(herrings)[1]
+average <- as.integer(max/60)
+
+sizes <- c()
+
+for (index in 1:length(herr_vec) ) {
+  if (index %% average == 0) {
+    sizes <- c(sizes, herr_vec[index])
+  }
+}
+
+
+
+sizes
+
+
+```
+
+
+
+### Interaktywny wykres rozmiaru śledzia w zależności od średniego czasu połowu:
+```{r echo=FALSE}
+inputPanel(
+  sliderInput("size", label = "Lata:", min = 1, max = 60, value = 1, step = 1)
+)
+
+renderImage(
+  {list(src = "data/herring.png", height = (sizes[input$size]-17)*20)}, deleteFile = FALSE
+  )
+```
+
+```{r}
+plot(1:60, sizes, xlab = "Kolejne lata", ylab = "Rozmiar śledzia", type = "l")
+```
+
+
