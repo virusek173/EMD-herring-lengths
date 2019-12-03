@@ -200,11 +200,9 @@ plot(mapIndexToYear(groupedData[["X"]]), groupedData[["length"]], cex = 0.5, mai
 
 ![](Herringmania_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
-## Rozkład kolumn
+## Rozkład wartości kolumn
 
 ##### Stworzenie wykresu rozkładu dla każdej ze zmiennych:
-
-Zacznijmy od zbadania rozkładu każdej z kolumn.
 
 ``` r
 legend <- c(
@@ -273,10 +271,30 @@ ważności.
 ``` r
 pos_cor <- c(sort(unique(res[res > 0.4 & res != 1.0])))
 neg_cor <- c(sort(unique(res[res < -0.4 & res != 1.0])))
+```
 
+Znalezione wartości korelacji pozytywnej przekraczające próg:
+
+``` r
+pos_cor
+```
+
+    ## [1] 0.41 0.44 0.56 0.73 0.77 0.82
+
+Znalezione wartości korelacji negatywnej przekraczające próg:
+
+``` r
+neg_cor
+```
+
+    ## [1] -0.71 -0.51 -0.45
+
+Chcielbyśmy zobaczyć które pary zmiennych kryją się za wysokimi
+wartościami korelacji. W tym celu tworzymy funkcję która znajdzie parę
+w macierzy korelacji.
+
+``` r
 show_pairs <- function(cor) {
-  print("Wartości korelacji:")
-  print(cor)
   pairs <- matrix(ncol = 2)
   for (i in cor){
     a = which(res==i, arr.ind=TRUE)
@@ -287,26 +305,13 @@ show_pairs <- function(cor) {
 }
 
 positive <- show_pairs(pos_cor)
-```
-
-    ## [1] "Wartości korelacji:"
-    ## [1] 0.41 0.44 0.56 0.73 0.77 0.82
-
-``` r
 negative <- show_pairs(neg_cor)
 ```
 
-    ## [1] "Wartości korelacji:"
-    ## [1] -0.71 -0.51 -0.45
+Znalezione pary pozytywnej korelacji:
 
 ``` r
-print("Znalezione pary pozytywnej korelacji")
-```
-
-    ## [1] "Znalezione pary pozytywnej korelacji"
-
-``` r
-print(positive)
+positive
 ```
 
     ##      [,1]    [,2]   
@@ -317,14 +322,10 @@ print(positive)
     ## [5,] "lcop2" "chel2"
     ## [6,] "cumf"  "fbar"
 
-``` r
-print("Znalezione pary negatywnej korelacji")
-```
-
-    ## [1] "Znalezione pary negatywnej korelacji"
+Znalezione pary negatywnej korelacji:
 
 ``` r
-print(negative)
+negative
 ```
 
     ##      [,1]     [,2]    
@@ -333,6 +334,8 @@ print(negative)
     ## [3,] "sst"    "length"
 
 ##### Analiza skorelowanych elementów
+
+##### Przegląd najbardziej skorelowanych par zmiennych:
 
 Pomijając autokorelację zmiennych (widoczną na przekątnej) z wykresu
 możemy zaobserwować wyróżniające się pary dodatniej korelacji: 1. Wsp.
@@ -349,17 +352,21 @@ Wsp. kor: 0.81 cumf:fbar (łączne roczne natężenie połowów w regionie
 \[ułamek pozostawionego narybku\] - natężenie połowów w regionie
 \[ułamek pozostawionego narybku\])
 
-Ocena źródła korelacji: 1. Dostępność planktonu Calanus finmarchicus gat
-1 jest zależna od planktonu tego samego rodzaju planktonu gat. 2. 2.
-Wzmożona oscylacja północnoatlantycka jest powiązana ze wzrostem indeksu
-obserwacji. Korzystając z wiedzy, że obserwacje posortowane są
-chronologicznie można stwierdzić że oscylacja rośnie wraz z czasem. 3.
-Wzmożona oscylacja północnoatlantycka jest powiązana ze wzrostem
-temperatury wody przy powierzchni. 4. Dostępność planktonu widłonogów
-gat 1. jest zależna od występnowania helgolandicus gat. 1. Gatunki te
-często występują razem. 5. Analogicznie jak pkt. 4 w przypadku gatunku
-nr 2 obu planktonów. 6. Natężenie regionalne jest składową całościowego
-natężenia stąd wysoka korelacja jest czymś spodziewanym.
+##### Ocena korelacji:
+
+1.  Dostępność planktonu Calanus finmarchicus gat 1 jest zależna od
+    planktonu tego samego rodzaju planktonu gat. 2.
+2.  Wzmożona oscylacja północnoatlantycka jest powiązana ze wzrostem
+    indeksu obserwacji. Korzystając z wiedzy, że obserwacje posortowane
+    są chronologicznie można stwierdzić że oscylacja rośnie wraz z
+    czasem.
+3.  Wzmożona oscylacja północnoatlantycka jest powiązana ze wzrostem
+    temperatury wody przy powierzchni.
+4.  Dostępność planktonu widłonogów gat 1. jest zależna od występnowania
+    helgolandicus gat. 1. Gatunki te często występują razem.
+5.  Analogicznie jak pkt. 4 w przypadku gatunku nr 2 obu planktonów.
+6.  Natężenie regionalne jest składową całościowego natężenia stąd
+    wysoka korelacja jest czymś spodziewanym.
 
 Wyróżniające się pary ujemnej korelacji: 7. Wsp. kor: -0.42 sst:length
 (temperatura przy powierzchni wody - długość złowionego śledzia) 8. Wsp.
@@ -385,26 +392,13 @@ pos_cor <- c(sort(unique(res[res > 0.3 & res < 0.4])))
 neg_cor <- c(sort(unique(res[res < -0.3 & res > -0.4])))
 
 softly_pos <- show_pairs(pos_cor)
-```
-
-    ## [1] "Wartości korelacji:"
-    ## [1] 0.31 0.32 0.35 0.37
-
-``` r
 softly_neg <- show_pairs(neg_cor)
 ```
 
-    ## [1] "Wartości korelacji:"
-    ## [1] -0.39 -0.36 -0.35 -0.34 -0.33
+Znalezione pary pozytywnej korelacji:
 
 ``` r
-print("Znalezione pary pozytywnej korelacji")
-```
-
-    ## [1] "Znalezione pary pozytywnej korelacji"
-
-``` r
-print(softly_pos)
+softly_pos
 ```
 
     ##      [,1]     [,2]   
@@ -413,14 +407,10 @@ print(softly_pos)
     ## [3,] "sst"    "X"    
     ## [4,] "totaln" "recr"
 
-``` r
-print("Znalezione pary negatywnej korelacji")
-```
-
-    ## [1] "Znalezione pary negatywnej korelacji"
+Znalezione pary negatywnej korelacji:
 
 ``` r
-print(softly_neg)
+softly_neg
 ```
 
     ##      [,1]     [,2]    
@@ -429,6 +419,8 @@ print(softly_neg)
     ## [3,] "nao"    "lcop2" 
     ## [4,] "length" "X"     
     ## [5,] "nao"    "chel2"
+
+##### Ocena korelacji:
 
 Przeglądając zbiór nieco mniej skorelowanych zmiennych można zauważyć,
 że średnia temperatura wody rośnie z czasem. Z drugiej strony liczba
@@ -455,14 +447,20 @@ rmse <- function(m, o) sqrt(mean((m - o)^2))
 
 R2 <- rsq(obs, mod)
 RMSE_v <- rmse(mod, obs)
-
-print(paste("Value of R^2:",round(R2,3)))
 ```
 
-    ## [1] "Value of R^2: 0.856"
+Wynik ewaluacji miarą R^2
 
 ``` r
-print(paste("Value of RSME:",round(RMSE_v,3)))
+round(R2,3)
 ```
 
-    ## [1] "Value of RSME: 0.669"
+    ## [1] 0.856
+
+Wynik ewaluacji miarą RSME
+
+``` r
+round(RMSE_v,3)
+```
+
+    ## [1] 0.669
