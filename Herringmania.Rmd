@@ -10,6 +10,7 @@ library(dplyr)
 
 #install.packages("ggcorrplot") # Tylko przy 1szym odpaleniu
 library(ggcorrplot)
+library(imager)
 ```
 
 ## Wstępna analiza danych
@@ -29,7 +30,7 @@ head(herrings, n=1)
 ```
 Widzimy, że z powodu braku nazwy pierwszej kolumny, została ona zastąpiona znakiem X. Akceptujemy to uzupełnienie pamiętając, aby w przyszłości odwoływać się właśnie do tego znaku.
 
-##### Zamiana znaku "?" reprezentującego pustą wartość na <NA>:
+##### Zamiana znaku "?" reprezentującego pustą wartość na NA:
 ```{r}
 #herrings <- head(herrings, 6)
 herrings[herrings == "?"] <- NA
@@ -60,7 +61,7 @@ blankRowsNumber
 ```
 Tym razem Wyszło nam mniej niż w przypadku zsumowania wszytkich zer. Różnica ta wynika z tego, że niektóre wiersze mają więcej pustych wartości niż jedną.
 
-##### Sprawdzenie ile procent całości zajumją :
+##### Sprawdzenie ile procent całości zajumją wiesze z pustymi wartościami:
 ```{r}
 percentage <- blankRowsNumber/dimentions[1] * 100
 round(percentage, 2)
@@ -120,6 +121,11 @@ mapIndexToYear(40000)
 #completeData[["X"]]
 plot(mapIndexToYear(groupedData[["X"]]), groupedData[["length"]], cex = 0.5, main = "Wykres zależności rozmiaru śledzia w analizowanych latach", xlab = "Kolejne lata", ylab = "Rozmiar śledzia")
 ```
+
+Lata przedstawione na wykresie są wyłuskane przy założeniu równego rozkładu łowisk w każdym roku.
+
+##### Przedstawienie wyniku interaktywnego wykresu rozmiaru śledzia:
+![](Rozmiary śledzika/animated_herring.gif)
 
 
 ## Rozkład wartości kolumn
