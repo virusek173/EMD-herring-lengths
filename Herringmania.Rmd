@@ -1,6 +1,6 @@
 ---
 title: "Herringmania"
-output: html_document
+output: github_document
 ---
 
 

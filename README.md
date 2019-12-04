@@ -33,7 +33,7 @@ Widzimy, że z powodu braku nazwy pierwszej kolumny, została ona
 zastąpiona znakiem X. Akceptujemy to uzupełnienie pamiętając, aby w
 przyszłości odwoływać się właśnie do tego znaku.
 
-##### Zamiana znaku “?” reprezentującego pustą wartość na <NA>:
+##### Zamiana znaku “?” reprezentującego pustą wartość na NA:
 
 ``` r
 #herrings <- head(herrings, 6)
@@ -81,9 +81,10 @@ blankRowsNumber
 
 Tym razem Wyszło nam mniej niż w przypadku zsumowania wszytkich zer.
 Różnica ta wynika z tego, że niektóre wiersze mają więcej pustych
-wartości niż jedną.
+wartości niż
+jedną.
 
-##### Sprawdzenie ile procent całości zajumją :
+##### Sprawdzenie ile procent całości zajumją wiesze z pustymi wartościami:
 
 ``` r
 percentage <- blankRowsNumber/dimentions[1] * 100
@@ -199,6 +200,13 @@ plot(mapIndexToYear(groupedData[["X"]]), groupedData[["length"]], cex = 0.5, mai
 ```
 
 ![](Herringmania_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+Lata przedstawione na wykresie są wyłuskane przy założeniu równego
+rozkładu łowisk w każdym roku.
+
+##### Przedstawienie wyniku interaktywnego wykresu rozmiaru śledzia:
+
+![](Rozmiary%20śledzika/animated_herring.gif)
 
 ## Rozkład wartości kolumn
 
