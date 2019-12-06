@@ -9,8 +9,11 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 
 #install.packages("ggcorrplot") # Tylko przy 1szym odpaleniu
+# install.packages("caret", dependencies = c("Depends", "Suggests"))
 library(ggcorrplot)
 library(imager)
+library(caret)
+library(varhandle)
 ```
 
 ## Wstępna analiza danych
@@ -287,32 +290,73 @@ Przeglądając zbiór nieco mniej skorelowanych zmiennych można zauważyć, że
 
 ## Konstrukcja regresora
 
-##### Podział zbioru danych na treningowy testowy i walidacyjny
+##### Wyłuskanie tylko kolumny do przewidywania długości oraz sst, który posiada silną negatywną korelację z długością:
 ```{r}
+dataToLearn <- completeData %>% select(length, sst)
+head(dataToLearn)
+```
+Widzimy, że sst nie jest wektorem liczb.
 
+##### Zamieniamy kolumnę sst na wektor liczbowy:
+```{r}
+countBlackRows2 <- function(data) {
+  blankRows <- data %>% filter(is.na(length) | is.na(sst))
+  blankRowsNumber <- count(blankRows)
+  blankRowsNumber
+}
 
+dataToLearn <- unfactor(dataToLearn)
+head(dataToLearn)
 ```
 
-
-## Ewaluacja wyników miara R^2 i RMSE 
+##### Podział zbioru danych na treningowy testowy i treningowy,
 ```{r}
-#dumb data
-obs <- 1:5
-mod <- c(0.8,2.4,2,3,4.8)
+set.seed(23)
+inTraining <- 
+    createDataPartition(
+        # atrybut do stratyfikacji
+        y = dataToLearn$length,
+        # procent w zbiorze uczącym
+        p = .75,
+        # chcemy indeksy a nie listę
+        list = FALSE)
 
-rsq <- function(x, y) summary(lm(y~x))$r.squared
-rmse <- function(m, o) sqrt(mean((m - o)^2))
-
-R2 <- rsq(obs, mod)
-RMSE_v <- rmse(mod, obs)
+training <- dataToLearn[ inTraining,]
+testing  <- dataToLearn[-inTraining,]
 ```
-Wynik ewaluacji miarą R^2
+##### Ustawienie parametrów uczenia oraz metody próbkowania na kroswalidację:
 ```{r}
-round(R2,3)
+ctrl <- trainControl(
+    # powtórzona ocena krzyżowa
+    method = "repeatedcv",
+    # liczba podziałów
+    number = 2,
+    # liczba powtórzeń
+    repeats = 5)
 ```
-Wynik ewaluacji miarą RSME
+
+##### Ustawienie metody uczenia na Random Forrest, oraz jej parametru ntree na 10, oznaczającego liczbę drzew.
+```{r warning=F}
+fit <- train(length ~ .,
+             data = training,
+             method = "rf",
+             trControl = ctrl,
+             # Paramter dla algorytmu uczącego
+              ntree = 10
+             )
+
+fit
+```
+
+##### Ustawienie metody uczenia na Regresję liniową:
 ```{r}
-round(RMSE_v,3)
+lm_fit <- train(length ~ .,
+                data = training, 
+                method = "lm")
+
+lm_fit
 ```
 
+Jak możemy zauważyć, w odpowiedzi dostajemy miary dopasowania. Interesuje nas miara R^2 i RMSE. R^2 wyjaśnia, w jakim stopniu wariancja jednej zmiennej wyjaśnia wariancję drugiej zmiennej. Jeśli więc R^2 modelu wynosi 0,50, to około połowy zaobserwowanej zmienności można wyjaśnić danymi wejściowymi modelu. Dążymy do jego maksymalizacji. RMSE jest to średnia kwadratowa błędów, będąca pierwiastkiem kwadratowym z błędu średniokwadratowego. Dążymy do jego minimalizacji. 
 
+Jak możemy zauważyć lepiej wypadł model Random Forrest, który osiągnął miary dopasowania na poziomie: RMSE = 1.190593 oraz R^2 = 0.4808247. Regresja liniowa wypadła nieco gorzej osiągając RMSE = 1.475002 oraz R^2 = 0.2035086.

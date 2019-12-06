@@ -681,27 +681,112 @@ softly_neg &lt;- show_pairs(neg_cor)</code></pre>
 </div>
 <div id="konstrukcja-regresora" class="section level2">
 <h2>Konstrukcja regresora</h2>
-<div id="podział-zbioru-danych-na-treningowy-testowy-i-walidacyjny" class="section level5">
-<h5>Podział zbioru danych na treningowy testowy i walidacyjny</h5>
+<div id="wyłuskanie-tylko-kolumny-do-przewidywania-długości-oraz-sst-który-posiada-silną-negatywną-korelację-z-długością" class="section level5">
+<h5>Wyłuskanie tylko kolumny do przewidywania długości oraz sst, który posiada silną negatywną korelację z długością:</h5>
+<pre class="r"><code>dataToLearn &lt;- completeData %&gt;% select(length, sst)
+head(dataToLearn)</code></pre>
+<pre><code>##   length           sst
+## 1   23.0 14.3069330186
+## 2   22.5 14.3069330186
+## 3   25.0 14.3069330186
+## 4   25.5 14.3069330186
+## 5   24.0 14.3069330186
+## 6   22.0 14.3069330186</code></pre>
+<p>Widzimy, że sst nie jest wektorem liczb.</p>
 </div>
+<div id="zamieniamy-kolumnę-sst-na-wektor-liczbowy" class="section level5">
+<h5>Zamieniamy kolumnę sst na wektor liczbowy:</h5>
+<pre class="r"><code>countBlackRows2 &lt;- function(data) {
+  blankRows &lt;- data %&gt;% filter(is.na(length) | is.na(sst))
+  blankRowsNumber &lt;- count(blankRows)
+  blankRowsNumber
+}
+
+dataToLearn &lt;- unfactor(dataToLearn)
+head(dataToLearn)</code></pre>
+<pre><code>##   length      sst
+## 1   23.0 14.30693
+## 2   22.5 14.30693
+## 3   25.0 14.30693
+## 4   25.5 14.30693
+## 5   24.0 14.30693
+## 6   22.0 14.30693</code></pre>
 </div>
-<div id="ewaluacja-wyników-miara-r2-i-rmse" class="section level2">
-<h2>Ewaluacja wyników miara R^2 i RMSE</h2>
-<pre class="r"><code>#dumb data
-obs &lt;- 1:5
-mod &lt;- c(0.8,2.4,2,3,4.8)
+<div id="podział-zbioru-danych-na-treningowy-testowy-i-treningowy" class="section level5">
+<h5>Podział zbioru danych na treningowy testowy i treningowy,</h5>
+<pre class="r"><code>set.seed(23)
+inTraining &lt;- 
+    createDataPartition(
+        # atrybut do stratyfikacji
+        y = dataToLearn$length,
+        # procent w zbiorze uczącym
+        p = .75,
+        # chcemy indeksy a nie listę
+        list = FALSE)
 
-rsq &lt;- function(x, y) summary(lm(y~x))$r.squared
-rmse &lt;- function(m, o) sqrt(mean((m - o)^2))
+training &lt;- dataToLearn[ inTraining,]
+testing  &lt;- dataToLearn[-inTraining,]</code></pre>
+</div>
+<div id="ustawienie-parametrów-uczenia-oraz-metody-próbkowania-na-kroswalidację" class="section level5">
+<h5>Ustawienie parametrów uczenia oraz metody próbkowania na kroswalidację:</h5>
+<pre class="r"><code>ctrl &lt;- trainControl(
+    # powtórzona ocena krzyżowa
+    method = &quot;repeatedcv&quot;,
+    # liczba podziałów
+    number = 2,
+    # liczba powtórzeń
+    repeats = 5)</code></pre>
+</div>
+<div id="ustawienie-metody-uczenia-na-random-forrest-oraz-jej-parametru-ntree-na-10-oznaczającego-liczbę-drzew." class="section level5">
+<h5>Ustawienie metody uczenia na Random Forrest, oraz jej parametru ntree na 10, oznaczającego liczbę drzew.</h5>
+<pre class="r"><code>fit &lt;- train(length ~ .,
+             data = training,
+             method = &quot;rf&quot;,
+             trControl = ctrl,
+             # Paramter dla algorytmu uczącego
+              ntree = 10
+             )
 
-R2 &lt;- rsq(obs, mod)
-RMSE_v &lt;- rmse(mod, obs)</code></pre>
-<p>Wynik ewaluacji miarą R^2</p>
-<pre class="r"><code>round(R2,3)</code></pre>
-<pre><code>## [1] 0.856</code></pre>
-<p>Wynik ewaluacji miarą RSME</p>
-<pre class="r"><code>round(RMSE_v,3)</code></pre>
-<pre><code>## [1] 0.669</code></pre>
+fit</code></pre>
+<pre><code>## Random Forest 
+## 
+## 39431 samples
+##     1 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (2 fold, repeated 5 times) 
+## Summary of sample sizes: 19715, 19716, 19716, 19715, 19716, 19715, ... 
+## Resampling results:
+## 
+##   RMSE      Rsquared  MAE     
+##   1.190886  0.480535  0.943138
+## 
+## Tuning parameter 'mtry' was held constant at a value of 2</code></pre>
+</div>
+<div id="ustawienie-metody-uczenia-na-regresję-liniową" class="section level5">
+<h5>Ustawienie metody uczenia na Regresję liniową:</h5>
+<pre class="r"><code>lm_fit &lt;- train(length ~ .,
+                data = training, 
+                method = &quot;lm&quot;)
+
+lm_fit</code></pre>
+<pre><code>## Linear Regression 
+## 
+## 39431 samples
+##     1 predictor
+## 
+## No pre-processing
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 39431, 39431, 39431, 39431, 39431, 39431, ... 
+## Resampling results:
+## 
+##   RMSE     Rsquared   MAE     
+##   1.47466  0.2032196  1.188928
+## 
+## Tuning parameter 'intercept' was held constant at a value of TRUE</code></pre>
+<p>Jak możemy zauważyć, w odpowiedzi dostajemy miary dopasowania. Interesuje nas miara R^2 i RMSE. R^2 wyjaśnia, w jakim stopniu wariancja jednej zmiennej wyjaśnia wariancję drugiej zmiennej. Jeśli więc R^2 modelu wynosi 0,50, to około połowy zaobserwowanej zmienności można wyjaśnić danymi wejściowymi modelu. Dążymy do jego maksymalizacji. RMSE jest to średnia kwadratowa błędów, będąca pierwiastkiem kwadratowym z błędu średniokwadratowego. Dążymy do jego minimalizacji.</p>
+<p>Jak możemy zauważyć lepiej wypadł model Random Forrest, który osiągnął miary dopasowania na poziomie: RMSE = 1.190593 oraz R^2 = 0.4808247. Regresja liniowa wypadła nieco gorzej osiągając RMSE = 1.475002 oraz R^2 = 0.2035086.</p>
+</div>
 </div>
 
 
