@@ -447,37 +447,378 @@ widłonogów gat. 2, Calanus helgolandicus gat. 2 oraz liczby wyławianych
 
 ## Obserwacje po łącznej analizie rozkładu danych i macierzy korelacji
 
-  - 
+``` r
+library(htmlwidgets)
+library(magrittr)
+library(dygraphs)
+library(webshot)
+```
+
+    ## 
+    ## Attaching package: 'webshot'
+
+    ## The following objects are masked from 'package:imager':
+    ## 
+    ##     resize, shrink
+
+``` r
+groupedData <- groupedData %>% mutate(mean_glony = mean(c(cfin1, cfin2, chel1, chel2, lcop1, lcop2)))
+groupedData <- unfactor(groupedData)
+ 
+make_sizes <- function(name){
+  herr_vec <- groupedData[[name]]
+  max <- dim(herrings)[1]
+  average <- as.integer(max/60)
+  sizes <- c()
+  sum  <- 0
+ 
+  for (index in 1:length(herr_vec) ) {
+    sum <- sum + herr_vec[index]
+   
+    if (index %% average == 0) {
+      mean <- sum/60
+      sizes <- c(sizes, mean)
+      sum  <- 0
+    }
+  }
+  return(sizes)
+}
+ 
+normalize <- function(x){
+    ww = ((x - min(x)) / (max(x) - min(x)))
+    return(ww)
+}
+ 
+make_df <- function(x1,x2) {
+  return(data.frame(
+  time= c(seq(0,58,1), 60),
+  value=normalize(make_sizes(x1)),
+  value2=normalize(make_sizes(x2))
+ 
+  ))
+}
+ 
+make_df_3v <- function(x1,x2,x3) {
+  return(data.frame(
+    time= c(seq(0,58,1), 60),
+    value=normalize(make_sizes(x1)),
+    value2=normalize(make_sizes(x2)),
+    value3=normalize(make_sizes(x3))
+   
+  ))
+}
+ 
+data1 <- make_df("length","sst")
+data2 <- make_df("length","nao")
+data33 <- make_df("nao","sst")
+data3 <- make_df("totaln","length")
+data4 <- make_df("totaln","fbar")
+data5 <- make_df("totaln","cumf")
+data7 <- make_df("length","fbar")
+data8 <- make_df("nao","mean_glony")
+ 
+p1 <- dygraph(data1, main = "Porównanie dlugosci śledzia do temperatury wody", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Długość śledzia") %>%
+  dySeries("value2", label = "Temp. wody")
+```
+
+    ## Registered S3 method overwritten by 'xts':
+    ##   method     from
+    ##   as.zoo.xts zoo
+
+``` r
+#p1
+ 
+p2 <- dygraph(data2, main = "Porównanie dlugosci śledzia do oscylacji północnoatlantyckiej", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Długość śledzia") %>%
+  dySeries("value2", label = "Oscylacja północnoatlantycka")
+#p2
+ 
+p3 <- dygraph(data33, main = "Oscylacja polnoconatlantycka a temperatura wody", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Oscylacja północnoatlantycka") %>%
+  dySeries("value2", label = "Temp. wody przy powierzchni")
+#p3
+ 
+p4 <- dygraph(data3, main = "Porównanie liczby złowionych śledzi do ich długości", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Liczba złowionych śledzi") %>%
+  dySeries("value2", label = "Długość śledzi")
+#p4
+ 
+p5 <- dygraph(data4, main = "Porównanie liczby złowionych śledzi do łącznego rocznego procentu zostawionego narybku", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.8) %>% dySeries("value", label = "Liczba złowionych śledzi ") %>%
+  dySeries("value2", label = "Łączny roczny procent zostawionego narybku") #%>% dySeries("value3", label = "Długość śledzia")
+#p5
+ 
+p6 <- dygraph(data5, main = "Porównanie liczby złowionych śledzi do regionalnego rocznego procentu zostawionego narybku", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Liczba złowionych śledzi ") %>%
+  dySeries("value2", label = "Regionalny procent zostawionego narybku")
+#p6
+ 
+p7 <- dygraph(data7, main = "Porównanie dlugosci śledzia do procentu pozostawionej populacji śledzi", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Długość śledzia") %>%
+  dySeries("value2", label = "Procent pozostawionej populacji śledzi [%]")
+#p7
+ 
+p8 <- dygraph(data8, main = "Oscylacja polnoconatlantycka a średnie łączne zagęszczenie glonów", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Oscylacja północnoatlantycka") %>%
+  dySeries("value2", label = "Średnie zagęszczenie glonów")
+#p8
+ 
+names <- c("p1.png","p2.png","p3.png","p4.png","p5.png","p6.png","p7.png","p8.png")
+ 
+width<- 1080
+height <- 610
+```
+
+Wszystkie prezentowane przez nas poniższe wykresy są ustandaryzowane na
+osi OY, natomiast oś OX symbolizuje lata (badania trwały 60 lat).
+
+Temperatura wody + oscylacja północnoatlantycka - Jak pokazują wykresy 1
+i 2 źródłami malejącego rozmiaru śledzia jest wzrost temperatura wody
+która zawiera się w oscylacji północnoatlantyckiej, która także ma
+tendencję wzrostową . Zjawisko to determinuje zmiany ciśnienia,
+temperatury jak i prądów morskich. Zmiany tak wielu czynników natury
+mogą mieć bezpośredni wpływ na aktywność śledzi (np. mogą być zmuszone
+do częstych migracji lub mieć kłopoty ze znalezieniem pożywienia (o czym
+w punkcie 3), ponieważ wzrost oscylacji narusza łańcuch pokarmowy).
+Oscylacja jak i temperatura są bardzo zależne od siebie (wykres 3)
+
+``` r
+saveWidget(p1, "temp.html", selfcontained = FALSE)
+webshot("temp.html", file = names[1],
+        cliprect = c(10,30,width+50,height+50)
+        ,vwidth = width, vheight = height )
+```
+
+![](Herringmania_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+``` r
+saveWidget(p2, "temp.html", selfcontained = FALSE)
+webshot("temp.html", file = names[2],
+        cliprect = c(10,30,width+50,height+50)
+        ,vwidth = width, vheight = height )
+```
+
+![](Herringmania_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+
+``` r
+saveWidget(p3, "temp.html", selfcontained = FALSE)
+webshot("temp.html", file = names[3],
+        cliprect = c(10,30,width+50,height+50)
+        ,vwidth = width, vheight = height )
+```
+
+![](Herringmania_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
+Choć nie wynika to z macierzy korelacji, posiłkując się wiedzą
+dziedzinową uważamy, że im większa jest różnica pomiędzy narybkiem a
+procentem zostawianych ryb, tym społeczeństwo w akwenie będzie młodsze,
+czyli często mniejsze pod względem długości osobnika. Jak pokazuje
+wykres 4 w momencie mniejszych połowów (lata 20-40) ryby były większe.
+Nie jest to jednak przekonujące ponieważ wahania długości wydają się
+momentami niezależne od wartości narybku (lata 0-20). Jeśli dodamy
+natomiast liczbę łowionych ryb i pozostawiany narybek na jednym wykresie
+(wyk. 5 oraz wyk. 6) możemy zaobserwować, że zawsze gdy procent
+łowionych ryb przewyższał znormalizowany stosunek pozostawionych ryb,
+kolejne lata były burzliwe i musiały być przeznaczone na odbudowywanie
+populacji. Prowadzi nas to do wyk. 7 który pokazuje że długość śledzi
+jest bardzo skorelowana z pozostawianym narybkiem. Często by wyrobić
+normy po latach mniejszych połowów, łowi się więcej ryb niż powinno, co
+może skutkować zakłóceniem reprodukcji śledzia. Po latach obfitych łowów
+by zrealizować zapotrzebowanie łowi się małe ryby, które już pozostały w
+akwenie. Problemem może być zatem zbyt długi okres ‘rabunkowy’, a zbyt
+ograniczony okres reprodukowania gatunku. W związku z tym łowione ryby
+są zwyczajnie mniejsze.
+
+``` r
+saveWidget(p4, "temp.html", selfcontained = FALSE)
+webshot("temp.html", file = names[4],
+        cliprect = c(10,30,width+50,height+50)
+        ,vwidth = width, vheight = height )
+```
+
+![](Herringmania_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
+``` r
+saveWidget(p5, "temp.html", selfcontained = FALSE)
+webshot("temp.html", file = names[5],
+        cliprect = c(10,30,width+50,height+50)
+        ,vwidth = width, vheight = height )
+```
+
+![](Herringmania_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+
+``` r
+saveWidget(p6, "temp.html", selfcontained = FALSE)
+webshot("temp.html", file = names[6],
+        cliprect = c(10,30,width+50,height+50)
+        ,vwidth = width, vheight = height )
+```
+
+![](Herringmania_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+
+``` r
+saveWidget(p7, "temp.html", selfcontained = FALSE)
+webshot("temp.html", file = names[7],
+        cliprect = c(10,30,width+50,height+50)
+        ,vwidth = width, vheight = height )
+```
+
+![](Herringmania_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+
+3.  Kolejnym powodem może być wpływ oscylacji północnoatlantyckiej na
+    zagęszczenie planktonu. Średnie zagęszczenie planktonu jest ujemnie
+    skorelowane z oscylacją. Tylko jeden gatunek planktonu (fin1), jest
+    wśród wymienianych 6-ciu pozytywnie skorelowany ze wspomnianym
+    zjawiskiem. Pozostałe 5 posiadają z nim ujemną korelację. To
+    sprawia, że ogólna średnia zawartość planktonu spada z czasem. Ryby
+    mając problem ze znalezieniem pożywienia, mogą reagować na tę
+    napotkaną trudność ograniczonym wzrostem ciała. Wykres 8, w latach
+    35-45 pokazuje wyraźną ujemną korelacje zagęszczenia glonów a
+    temperatury wody.
+
+<!-- end list -->
+
+``` r
+saveWidget(p8, "temp.html", selfcontained = FALSE)
+webshot("temp.html", file = names[8],
+        cliprect = c(10,30,width+50,height+50)
+        ,vwidth = width, vheight = height )
+```
+
+![](Herringmania_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+
+Ważnym wnioskiem po obserwacji macierzy korelacji jest także to, że
+miesiąc połowu nie jest skorelowany z żadną z wartości. Wzmacnia to
+niezależność
+badania.
+
 ## Konstrukcja regresora
 
-##### Podział zbioru danych na treningowy testowy i walidacyjny
-
-## Ewaluacja wyników miara R^2 i RMSE
+##### Wyłuskanie tylko kolumny do przewidywania długości oraz sst, który posiada silną negatywną korelację z długością:
 
 ``` r
-#dumb data
-obs <- 1:5
-mod <- c(0.8,2.4,2,3,4.8)
-
-rsq <- function(x, y) summary(lm(y~x))$r.squared
-rmse <- function(m, o) sqrt(mean((m - o)^2))
-
-R2 <- rsq(obs, mod)
-RMSE_v <- rmse(mod, obs)
+dataToLearn <- completeData %>% select(length, sst)
+head(dataToLearn)
 ```
 
-Wynik ewaluacji miarą R^2
+    ##   length           sst
+    ## 1   23.0 14.3069330186
+    ## 2   22.5 14.3069330186
+    ## 3   25.0 14.3069330186
+    ## 4   25.5 14.3069330186
+    ## 5   24.0 14.3069330186
+    ## 6   22.0 14.3069330186
+
+Widzimy, że sst nie jest wektorem liczb.
+
+##### Zamieniamy kolumnę sst na wektor liczbowy:
 
 ``` r
-round(R2,3)
+countBlackRows2 <- function(data) {
+  blankRows <- data %>% filter(is.na(length) | is.na(sst))
+  blankRowsNumber <- count(blankRows)
+  blankRowsNumber
+}
+
+dataToLearn <- unfactor(dataToLearn)
+head(dataToLearn)
 ```
 
-    ## [1] 0.856
+    ##   length      sst
+    ## 1   23.0 14.30693
+    ## 2   22.5 14.30693
+    ## 3   25.0 14.30693
+    ## 4   25.5 14.30693
+    ## 5   24.0 14.30693
+    ## 6   22.0 14.30693
 
-Wynik ewaluacji miarą RSME
+##### Podział zbioru danych na treningowy testowy i treningowy,
 
 ``` r
-round(RMSE_v,3)
+set.seed(23)
+inTraining <- 
+    createDataPartition(
+        # atrybut do stratyfikacji
+        y = dataToLearn$length,
+        # procent w zbiorze uczącym
+        p = .75,
+        # chcemy indeksy a nie listę
+        list = FALSE)
+
+training <- dataToLearn[ inTraining,]
+testing  <- dataToLearn[-inTraining,]
 ```
 
-    ## [1] 0.669
+##### Ustawienie parametrów uczenia oraz metody próbkowania na kroswalidację:
+
+``` r
+ctrl <- trainControl(
+    # powtórzona ocena krzyżowa
+    method = "repeatedcv",
+    # liczba podziałów
+    number = 2,
+    # liczba powtórzeń
+    repeats = 5)
+```
+
+##### Ustawienie metody uczenia na Random Forrest, oraz jej parametru ntree na 10, oznaczającego liczbę drzew.
+
+``` r
+fit <- train(length ~ .,
+             data = training,
+             method = "rf",
+             trControl = ctrl,
+             # Paramter dla algorytmu uczącego
+              ntree = 10
+             )
+
+fit
+```
+
+    ## Random Forest 
+    ## 
+    ## 39431 samples
+    ##     1 predictor
+    ## 
+    ## No pre-processing
+    ## Resampling: Cross-Validated (2 fold, repeated 5 times) 
+    ## Summary of sample sizes: 19715, 19716, 19716, 19715, 19716, 19715, ... 
+    ## Resampling results:
+    ## 
+    ##   RMSE      Rsquared  MAE     
+    ##   1.190886  0.480535  0.943138
+    ## 
+    ## Tuning parameter 'mtry' was held constant at a value of 2
+
+##### Ustawienie metody uczenia na Regresję liniową:
+
+``` r
+lm_fit <- train(length ~ .,
+                data = training, 
+                method = "lm")
+
+lm_fit
+```
+
+    ## Linear Regression 
+    ## 
+    ## 39431 samples
+    ##     1 predictor
+    ## 
+    ## No pre-processing
+    ## Resampling: Bootstrapped (25 reps) 
+    ## Summary of sample sizes: 39431, 39431, 39431, 39431, 39431, 39431, ... 
+    ## Resampling results:
+    ## 
+    ##   RMSE     Rsquared   MAE     
+    ##   1.47466  0.2032196  1.188928
+    ## 
+    ## Tuning parameter 'intercept' was held constant at a value of TRUE
+
+Do uczenia modelu został użyty parametr najbardziej skolrelowany z
+długością śledzia, jakim była temperatura powierzchni wody. Jak możemy
+zauważyć, w odpowiedzi dostajemy miary dopasowania. Interesuje nas miara
+R^2 i RMSE. R^2 wyjaśnia, w jakim stopniu wariancja jednej zmiennej
+wyjaśnia wariancję drugiej zmiennej. Jeśli więc R^2 modelu wynosi 0,50,
+to około połowy zaobserwowanej zmienności można wyjaśnić danymi
+wejściowymi modelu. Dążymy do jego maksymalizacji. RMSE jest to średnia
+kwadratowa błędów, będąca pierwiastkiem kwadratowym z błędu
+średniokwadratowego. Dążymy do jego minimalizacji.
+
+Jak możemy zauważyć lepiej wypadł model Random Forrest, który osiągnął
+miary dopasowania na poziomie: RMSE = 1.190593 oraz R^2 = 0.4808247.
+Regresja liniowa wypadła nieco gorzej osiągając RMSE = 1.475002 oraz R^2
+= 0.2035086.
