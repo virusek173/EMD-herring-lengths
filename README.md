@@ -1,5 +1,6 @@
 -   [Herringmania](#herringmania)
     -   [Wstępna analiza danych](#wstępna-analiza-danych)
+        -   [Wstęp](#wstęp)
         -   [Wczytanie danych oraz określenie
             rozmiaru:](#wczytanie-danych-oraz-określenie-rozmiaru)
         -   [Wypisanie nazw kolumn oraz pierwszego
@@ -28,8 +29,6 @@
     -   [Rozkład wartości kolumn](#rozkład-wartości-kolumn)
         -   [Stworzenie wykresu rozkładu dla każdej ze
             zmiennych:](#stworzenie-wykresu-rozkładu-dla-każdej-ze-zmiennych)
-        -   [TODO skomentowac najdziwniejsze anomalie na
-            wykresach](#todo-skomentowac-najdziwniejsze-anomalie-na-wykresach)
     -   [Korelacja pomiędzy zmiennym](#korelacja-pomiędzy-zmiennym)
         -   [Filtracja głównie skorelowanych zmiennych pozyskanych z
             macierzy
@@ -70,6 +69,24 @@ Data wygenerowania dokumentu: 08 grudnia, 2019
 
 Wstępna analiza danych
 ----------------------
+
+##### Wstęp
+
+Analiza dotyczyła badania wpływu czynników na długość śledzia w
+europejskich akwenach. Głównymi częściami analizy była: analiza wstępna,
+sprawdzenie rozkładu wartości zmiennych oraz ich korlacji, podsumowanie
+uzyskanych wartości oraz nauka regresora.
+
+Wstępna analiza danych wykazała, że potrzebna jest dodatkowa filtracja
+warotści pustych. Dodatkowo pokazuje zalety pogrupowania zbioru po
+łowiskach. Późniejsza analiza wskazuje na główne przyczyny malejącej
+długości śledzia - wzrost oscylacji północnoatlantyckiej (głównie
+temperatury wody), zbyt duże natężenie połowów oraz zanikanie
+zagęszczenia planktonu. Na końcu podjeliśmy próbę nauki regresora. Wsród
+badanych metod najlepsza okazała się metoda: ‘Random Forest’.
+
+Idea naszych badań polega na analitycznym zgłębieniu się w powyższe
+kategorie problemu czego owocem są liczne tezy postawione poniżej.
 
 ##### Wczytanie danych oraz określenie rozmiaru:
 
@@ -146,7 +163,7 @@ blankRowsNumber
     ##   <int>
     ## 1 10094
 
-Tym razem Wyszło nam mniej niż w przypadku zsumowania wszytkich zer.
+Tym razem wyszło nam mniej niż w przypadku zsumowania wszytkich zer.
 Różnica ta wynika z tego, że niektóre wiersze mają więcej pustych
 wartości niż jedną.
 
@@ -322,12 +339,10 @@ Niektóre rozkłady danych z jednej kategorii (kolumny) przypominają
 rozkład normlany mi. dane: długości śledzia, poziomu zasolenia wody czy
 miesiąca połowu.
 
-##### TODO skomentowac najdziwniejsze anomalie na wykresach
-
 Korelacja pomiędzy zmiennym
 ---------------------------
 
-Ważnym czynnikiem jest także zbadanie korelacji pomiędzy poszczególnym,i
+Ważnym czynnikiem jest także zbadanie korelacji pomiędzy poszczególnymi
 zmiennymi
 
 ``` r
@@ -433,14 +448,16 @@ koło).
 
 ##### Ocena korelacji:
 
-1.  Dostępność planktonu Calanus finmarchicus gat 1 jest zależna od
+1.  Dostępność planktonu Calanus finmarchicus gat. 1 jest zależna od
     planktonu tego samego rodzaju planktonu gat. 2.
 2.  Wzmożona oscylacja północnoatlantycka jest powiązana ze wzrostem
     indeksu obserwacji. Korzystając z wiedzy, że obserwacje posortowane
     są chronologicznie można stwierdzić że oscylacja rośnie wraz z
     czasem.
 3.  Wzmożona oscylacja północnoatlantycka jest powiązana ze wzrostem
-    temperatury wody przy powierzchni.
+    temperatury wody przy powierzchni. Wg. wiedzy dziedzinowej w
+    oscylacji zawiera się mi. temperatura, ciśnienie powietrza, prądy
+    morskie.
 4.  Dostępność planktonu widłonogów gat 1. jest zależna od występnowania
     helgolandicus gat. 1. Gatunki te często występują razem.
 5.  Analogicznie jak pkt. 4 w przypadku gatunku nr 2 obu planktonów.
@@ -586,7 +603,7 @@ data5 <- make_df("totaln","cumf")
 data7 <- make_df("length","fbar")
 data8 <- make_df("nao","mean_glony")
  
-p1 <- dygraph(data1, main = "Porównanie dlugosci śledzia do temperatury wody", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Długość śledzia") %>%
+p1 <- dygraph(data1, main = "Wykres 1 - Porównanie dlugosci śledzia do temperatury wody", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Długość śledzia") %>%
   dySeries("value2", label = "Temp. wody")
 ```
 
@@ -597,31 +614,31 @@ p1 <- dygraph(data1, main = "Porównanie dlugosci śledzia do temperatury wody",
 ``` r
 #p1
  
-p2 <- dygraph(data2, main = "Porównanie dlugosci śledzia do oscylacji północnoatlantyckiej", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Długość śledzia") %>%
+p2 <- dygraph(data2, main = "Wykres 2 - Porównanie dlugosci śledzia do oscylacji północnoatlantyckiej", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Długość śledzia") %>%
   dySeries("value2", label = "Oscylacja północnoatlantycka")
 #p2
  
-p3 <- dygraph(data33, main = "Oscylacja polnoconatlantycka a temperatura wody", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Oscylacja północnoatlantycka") %>%
+p3 <- dygraph(data33, main = "Wykres 3 - Oscylacja polnoconatlantycka a temperatura wody", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Oscylacja północnoatlantycka") %>%
   dySeries("value2", label = "Temp. wody przy powierzchni")
 #p3
  
-p4 <- dygraph(data3, main = "Porównanie liczby złowionych śledzi do ich długości", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Liczba złowionych śledzi") %>%
+p4 <- dygraph(data3, main = "Wykres 4 - Porównanie liczby złowionych śledzi do ich długości", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Liczba złowionych śledzi") %>%
   dySeries("value2", label = "Długość śledzi")
 #p4
  
-p5 <- dygraph(data4, main = "Porównanie liczby złowionych śledzi do łącznego rocznego procentu zostawionego narybku", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.8) %>% dySeries("value", label = "Liczba złowionych śledzi ") %>%
+p5 <- dygraph(data4, main = "Wykres 5 - Porównanie liczby złowionych śledzi do łącznego rocznego procentu zostawionego narybku", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.8) %>% dySeries("value", label = "Liczba złowionych śledzi ") %>%
   dySeries("value2", label = "Łączny roczny procent zostawionego narybku") #%>% dySeries("value3", label = "Długość śledzia")
 #p5
  
-p6 <- dygraph(data5, main = "Porównanie liczby złowionych śledzi do regionalnego rocznego procentu zostawionego narybku", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Liczba złowionych śledzi ") %>%
+p6 <- dygraph(data5, main = "Wykres 6 - Porównanie liczby złowionych śledzi do regionalnego rocznego procentu zostawionego narybku", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Liczba złowionych śledzi ") %>%
   dySeries("value2", label = "Regionalny procent zostawionego narybku")
 #p6
  
-p7 <- dygraph(data7, main = "Porównanie dlugosci śledzia do procentu pozostawionej populacji śledzi", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Długość śledzia") %>%
+p7 <- dygraph(data7, main = "Wykres 7 - Porównanie dlugosci śledzia do procentu pozostawionej populacji śledzi", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Długość śledzia") %>%
   dySeries("value2", label = "Procent pozostawionej populacji śledzi [%]")
 #p7
  
-p8 <- dygraph(data8, main = "Oscylacja polnoconatlantycka a średnie łączne zagęszczenie glonów", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Oscylacja północnoatlantycka") %>%
+p8 <- dygraph(data8, main = "Wykres 8 - Oscylacja polnoconatlantycka a średnie łączne zagęszczenie glonów", ylab = "Znormalizowana wartość") %>% dyOptions(fillGraph = TRUE, fillAlpha = 0.4) %>% dySeries("value", label = "Oscylacja północnoatlantycka") %>%
   dySeries("value2", label = "Średnie zagęszczenie glonów")
 #p8
  
@@ -635,14 +652,15 @@ Wszystkie prezentowane przez nas poniższe wykresy są ustandaryzowane na
 osi OY, natomiast oś OX symbolizuje lata (badania trwały 60 lat).
 
 Temperatura wody + oscylacja północnoatlantycka - Jak pokazują wykresy 1
-i 2 źródłami malejącego rozmiaru śledzia jest wzrost temperatura wody
-która zawiera się w oscylacji północnoatlantyckiej, która także ma
-tendencję wzrostową . Zjawisko to determinuje zmiany ciśnienia,
-temperatury jak i prądów morskich. Zmiany tak wielu czynników natury
-mogą mieć bezpośredni wpływ na aktywność śledzi (np. mogą być zmuszone
-do częstych migracji lub mieć kłopoty ze znalezieniem pożywienia (o czym
-w punkcie 3), ponieważ wzrost oscylacji narusza łańcuch pokarmowy).
-Oscylacja jak i temperatura są bardzo zależne od siebie (wykres 3)
+i 2 głównymi źródłami malejącego rozmiaru śledzia jest wzrost
+temperatura wody która zawiera się w oscylacji północnoatlantyckiej,
+która także ma tendencję wzrostową. Zjawisko to determinuje zmiany
+ciśnienia, temperatury jak i prądów morskich. Zmiany tak wielu czynników
+natury mogą mieć bezpośredni wpływ na aktywność śledzi (np. mogą być
+zmuszone do częstych migracji lub mieć kłopoty ze znalezieniem
+pożywienia (o czym w punkcie 3), ponieważ wzrost oscylacji narusza
+łańcuch pokarmowy). Oscylacja jak i temperatura są bardzo zależne od
+siebie (wykres 3)
 
 ``` r
 saveWidget(p1, "temp.html", selfcontained = FALSE)
@@ -674,20 +692,22 @@ webshot("temp.html", file = names[3],
 Choć nie wynika to z macierzy korelacji, posiłkując się wiedzą
 dziedzinową uważamy, że im większa jest różnica pomiędzy narybkiem a
 procentem zostawianych ryb, tym społeczeństwo w akwenie będzie młodsze,
-czyli często mniejsze pod względem długości osobnika. Jak pokazuje
-wykres 4 w momencie mniejszych połowów (lata 20-40) ryby były większe.
-Nie jest to jednak przekonujące ponieważ wahania długości wydają się
-momentami niezależne od wartości narybku (lata 0-20). Jeśli dodamy
-natomiast liczbę łowionych ryb i pozostawiany narybek na jednym wykresie
-(wyk. 5 oraz wyk. 6) możemy zaobserwować, że zawsze gdy procent
-łowionych ryb przewyższał znormalizowany stosunek pozostawionych ryb,
-kolejne lata były burzliwe i musiały być przeznaczone na odbudowywanie
-populacji. Prowadzi nas to do wyk. 7 który pokazuje że długość śledzi
-jest bardzo skorelowana z pozostawianym narybkiem. Często by wyrobić
-normy po latach mniejszych połowów, łowi się więcej ryb niż powinno, co
-może skutkować zakłóceniem reprodukcji śledzia. Po latach obfitych łowów
-by zrealizować zapotrzebowanie łowi się małe ryby, które już pozostały w
-akwenie. Problemem może być zatem zbyt długi okres ‘rabunkowy’, a zbyt
+czyli często mniejsze pod względem długości osobnika. Mimo, początkowych
+założeń o wieku śledzi (3 lata), możemy spekulować, że jest to
+najprawdopodobniej jedynie estymacja. Jak pokazuje wykres 4 w momencie
+mniejszych połowów (lata 20-40) ryby były większe. Nie jest to jednak
+przekonujące ponieważ wahania długości wydają się momentami niezależne
+od wartości narybku (lata 0-20). Jeśli dodamy natomiast liczbę łowionych
+ryb i pozostawiany narybek na jednym wykresie (wyk. 5 oraz wyk. 6)
+możemy zaobserwować, że zawsze gdy procent łowionych ryb przewyższał
+znormalizowany stosunek pozostawionych ryb, kolejne lata były burzliwe i
+musiały być przeznaczone na odbudowywanie populacji. Prowadzi nas to do
+wyk. 7 który pokazuje że długość śledzi jest bardzo skorelowana z
+pozostawianym narybkiem. Często by wyrobić normy po latach mniejszych
+połowów, łowi się więcej ryb niż powinno, co może skutkować zakłóceniem
+reprodukcji śledzia. Po latach obfitych łowów by zrealizować
+zapotrzebowanie łowi się małe ryby, które już pozostały w akwenie.
+Problemem może być zatem zbyt długi okres ‘rabunkowy’, a zbyt
 ograniczony okres reprodukowania gatunku. W związku z tym łowione ryby
 są zwyczajnie mniejsze.
 

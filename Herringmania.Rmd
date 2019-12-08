@@ -16,7 +16,7 @@ library(dplyr)
 # install.packages("caret", dependencies = c("Depends", "Suggests"))
 library(ggcorrplot)
 library(imager)
-#library(caret)
+library(caret)
 library(varhandle)
 ```
 # Herringmania
