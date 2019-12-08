@@ -1,7 +1,75 @@
-Herringmania
-================
+-   [Herringmania](#herringmania)
+    -   [Wstępna analiza danych](#wstępna-analiza-danych)
+        -   [Wczytanie danych oraz określenie
+            rozmiaru:](#wczytanie-danych-oraz-określenie-rozmiaru)
+        -   [Wypisanie nazw kolumn oraz pierwszego
+            wiersza:](#wypisanie-nazw-kolumn-oraz-pierwszego-wiersza)
+        -   [Zamiana znaku “?” reprezentującego pustą wartość na
+            NA:](#zamiana-znaku-reprezentującego-pustą-wartość-na-na)
+        -   [Sprawdzenie ile jest pustych wartości w każdej
+            kolumnie:](#sprawdzenie-ile-jest-pustych-wartości-w-każdej-kolumnie)
+        -   [Sprawdzenie ile jest pustych wartości
+            razem:](#sprawdzenie-ile-jest-pustych-wartości-razem)
+        -   [Sprawdzenie ile jest wierszy z pustymi wartościami.
+            Wzięliśy pod uwagę tylko prawdopodobne
+            kolumny:](#sprawdzenie-ile-jest-wierszy-z-pustymi-wartościami.-wzięliśy-pod-uwagę-tylko-prawdopodobne-kolumny)
+        -   [Sprawdzenie ile procent całości zajumją wiesze z pustymi
+            wartościami:](#sprawdzenie-ile-procent-całości-zajumją-wiesze-z-pustymi-wartościami)
+        -   [Zastąpienie ubytków w danych sąsiednią
+            wartością:](#zastąpienie-ubytków-w-danych-sąsiednią-wartością)
+        -   [Usunięcie pozostałych
+            wierszy:](#usunięcie-pozostałych-wierszy)
+        -   [Funkcja mapująca indeks na
+            rok:](#funkcja-mapująca-indeks-na-rok)
+        -   [Wykres zależności rozmiaru śledzia w analizowanych
+            latach:](#wykres-zależności-rozmiaru-śledzia-w-analizowanych-latach)
+        -   [Przedstawienie wyniku interaktywnego wykresu rozmiaru
+            śledzia:](#przedstawienie-wyniku-interaktywnego-wykresu-rozmiaru-śledzia)
+    -   [Rozkład wartości kolumn](#rozkład-wartości-kolumn)
+        -   [Stworzenie wykresu rozkładu dla każdej ze
+            zmiennych:](#stworzenie-wykresu-rozkładu-dla-każdej-ze-zmiennych)
+        -   [TODO skomentowac najdziwniejsze anomalie na
+            wykresach](#todo-skomentowac-najdziwniejsze-anomalie-na-wykresach)
+    -   [Korelacja pomiędzy zmiennym](#korelacja-pomiędzy-zmiennym)
+        -   [Filtracja głównie skorelowanych zmiennych pozyskanych z
+            macierzy
+            korelacji:](#filtracja-głównie-skorelowanych-zmiennych-pozyskanych-z-macierzy-korelacji)
+        -   [Analiza skorelowanych
+            elementów:](#analiza-skorelowanych-elementów)
+        -   [Z wykresu możemy zaobserwować wyróżniające się pary
+            dodatniej
+            korelacji:](#z-wykresu-możemy-zaobserwować-wyróżniające-się-pary-dodatniej-korelacji)
+        -   [Ocena korelacji:](#ocena-korelacji)
+        -   [Wyróżniające się pary ujemnej
+            korelacji:](#wyróżniające-się-pary-ujemnej-korelacji)
+        -   [Filtracja zmiennych znacząco
+            skorelowanych:](#filtracja-zmiennych-znacząco-skorelowanych)
+        -   [Ocena korelacji:](#ocena-korelacji-2)
+    -   [Obserwacje po łącznej analizie rozkładu danych i macierzy
+        korelacji](#obserwacje-po-łącznej-analizie-rozkładu-danych-i-macierzy-korelacji)
+    -   [Konstrukcja regresora](#konstrukcja-regresora)
+        -   [Wyłuskanie tylko kolumny do przewidywania długości oraz
+            sst, który posiada silną negatywną korelację z
+            długością:](#wyłuskanie-tylko-kolumny-do-przewidywania-długości-oraz-sst-który-posiada-silną-negatywną-korelację-z-długością)
+        -   [Zamieniamy kolumnę sst na wektor
+            liczbowy:](#zamieniamy-kolumnę-sst-na-wektor-liczbowy)
+        -   [Podział zbioru danych na treningowy testowy i
+            treningowy,](#podział-zbioru-danych-na-treningowy-testowy-i-treningowy)
+        -   [Ustawienie parametrów uczenia oraz metody próbkowania na
+            kroswalidację:](#ustawienie-parametrów-uczenia-oraz-metody-próbkowania-na-kroswalidację)
+        -   [Ustawienie metody uczenia na Random Forrest, oraz jej
+            parametru ntree na 10, oznaczającego liczbę
+            drzew.](#ustawienie-metody-uczenia-na-random-forrest-oraz-jej-parametru-ntree-na-10-oznaczającego-liczbę-drzew.)
+        -   [Ustawienie metody uczenia na Regresję
+            liniową:](#ustawienie-metody-uczenia-na-regresję-liniową)
 
-## Wstępna analiza danych
+Herringmania
+============
+
+Data wygenerowania dokumentu: 08 grudnia, 2019
+
+Wstępna analiza danych
+----------------------
 
 ##### Wczytanie danych oraz określenie rozmiaru:
 
@@ -15,8 +83,7 @@ dimentions
     ## [1] 52582    16
 
 Mamy do czynienia z danymi mającymi 16 zmiennych oraz 52582 przypadków
-do
-    analizy.
+do analizy.
 
 ##### Wypisanie nazw kolumn oraz pierwszego wiersza:
 
@@ -81,8 +148,7 @@ blankRowsNumber
 
 Tym razem Wyszło nam mniej niż w przypadku zsumowania wszytkich zer.
 Różnica ta wynika z tego, że niektóre wiersze mają więcej pustych
-wartości niż
-jedną.
+wartości niż jedną.
 
 ##### Sprawdzenie ile procent całości zajumją wiesze z pustymi wartościami:
 
@@ -145,8 +211,7 @@ blankRowsNumber
     ## 1     0
 
 Teraz już mamy kompletne dane, bez pustych wartości. Możemy zatem
-kontynuaować
-przetwarzanie.
+kontynuaować przetwarzanie.
 
 ###### Zauważyliśmy, że większość danych w ramach jednego łowiska są identyczne, więc pogrupowaliśmy je po tych danych:
 
@@ -199,7 +264,7 @@ mapIndexToYear(40000)
 plot(mapIndexToYear(groupedData[["X"]]), groupedData[["length"]], cex = 0.5, main = "Wykres zależności rozmiaru śledzia w analizowanych latach", xlab = "Kolejne lata", ylab = "Rozmiar śledzia")
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 Lata przedstawione na wykresie są wyłuskane przy założeniu równego
 rozkładu łowisk w każdym roku.
@@ -208,7 +273,8 @@ rozkładu łowisk w każdym roku.
 
 ![](Rozmiary%20śledzika/animated_herring.gif)
 
-## Rozkład wartości kolumn
+Rozkład wartości kolumn
+-----------------------
 
 ##### Stworzenie wykresu rozkładu dla każdej ze zmiennych:
 
@@ -232,7 +298,8 @@ legend <- c(
     "nao: oscylacja północnoatlantycka [mb]")
 
 names <- names(groupedData)
-df <- sapply(groupedData[, c(1:16)], as.numeric)
+df <- unfactor(groupedData)
+df <- sapply(df[, c(1:16)], as.numeric)
 
 for (x in c(1:4)){
   layout(matrix(c(1,2,3,4), 2, 2, byrow = TRUE))
@@ -249,7 +316,7 @@ for (x in c(1:4)){
 }
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->![](Herringmania_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->![](Herringmania_files/figure-gfm/unnamed-chunk-12-3.png)<!-- -->![](Herringmania_files/figure-gfm/unnamed-chunk-12-4.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-12-1.png)![](Herringmania_files/figure-markdown_github/unnamed-chunk-12-2.png)![](Herringmania_files/figure-markdown_github/unnamed-chunk-12-3.png)![](Herringmania_files/figure-markdown_github/unnamed-chunk-12-4.png)
 
 Niektóre rozkłady danych z jednej kategorii (kolumny) przypominają
 rozkład normlany mi. dane: długości śledzia, poziomu zasolenia wody czy
@@ -257,7 +324,8 @@ miesiąca połowu.
 
 ##### TODO skomentowac najdziwniejsze anomalie na wykresach
 
-## Korelacja pomiędzy zmiennym
+Korelacja pomiędzy zmiennym
+---------------------------
 
 Ważnym czynnikiem jest także zbadanie korelacji pomiędzy poszczególnym,i
 zmiennymi
@@ -267,10 +335,10 @@ res <- round(cor(df),2)
 print(ggcorrplot(res, method = "circle"))
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-13-1.png)
 Powyższa macierz korelacji przedstawia zależności pomiędzy każdą parą
-zmiennych. Przyjęty próg ważności obserwacji wynosi \< -0.4 oraz \> 0.4.
-Przefiltrujmy macierz i zobaczmy które z par należą do przedziału
+zmiennych. Przyjęty próg ważności obserwacji wynosi &lt; -0.4 oraz &gt;
+0.4. Przefiltrujmy macierz i zobaczmy które z par należą do przedziału
 ważności.
 
 ##### Filtracja głównie skorelowanych zmiennych pozyskanych z macierzy korelacji:
@@ -286,7 +354,7 @@ Znalezione wartości korelacji pozytywnej przekraczające próg:
 pos_cor
 ```
 
-    ## [1] 0.41 0.44 0.56 0.73 0.77 0.82
+    ## [1] 0.41 0.51 0.65 0.82 0.88 0.95
 
 Znalezione wartości korelacji negatywnej przekraczające próg:
 
@@ -294,7 +362,7 @@ Znalezione wartości korelacji negatywnej przekraczające próg:
 neg_cor
 ```
 
-    ## [1] -0.71 -0.51 -0.45
+    ## [1] -0.71 -0.55 -0.51 -0.45
 
 Chcielbyśmy zobaczyć które pary zmiennych kryją się za odpowiednio
 wysokimi(niskimi) wartościami korelacji. W tym celu tworzymy funkcję
@@ -323,11 +391,11 @@ positive
 
     ##      [,1]    [,2]   
     ## [1,] "nao"   "X"    
-    ## [2,] "cfin2" "cfin1"
-    ## [3,] "nao"   "sst"  
-    ## [4,] "lcop1" "chel1"
+    ## [2,] "nao"   "sst"  
+    ## [3,] "lcop2" "cfin2"
+    ## [4,] "cumf"  "fbar" 
     ## [5,] "lcop2" "chel2"
-    ## [6,] "cumf"  "fbar"
+    ## [6,] "lcop1" "chel1"
 
 Znalezione pary negatywnej korelacji:
 
@@ -337,8 +405,9 @@ negative
 
     ##      [,1]     [,2]    
     ## [1,] "totaln" "cumf"  
-    ## [2,] "totaln" "fbar"  
-    ## [3,] "sst"    "length"
+    ## [2,] "nao"    "lcop1" 
+    ## [3,] "nao"    "totaln"
+    ## [4,] "sst"    "length"
 
 ##### Analiza skorelowanych elementów:
 
@@ -380,22 +449,22 @@ koło).
 
 ##### Wyróżniające się pary ujemnej korelacji:
 
-7.  Wsp. kor: -0.42 sst:length (temperatura przy powierzchni wody -
+1.  Wsp. kor: -0.42 sst:length (temperatura przy powierzchni wody -
     długość złowionego śledzia)
-8.  Wsp. kor: -0.50 totaln:fbar (łączna liczba ryb złowionych w ramach
+2.  Wsp. kor: -0.50 totaln:fbar (łączna liczba ryb złowionych w ramach
     połowu - natężenie połowów w regionie)
-9.  Wsp. kor: -0.70 totaln:cumf (łączna liczba ryb złowionych w ramach
+3.  Wsp. kor: -0.70 totaln:cumf (łączna liczba ryb złowionych w ramach
     połowu - łączne roczne natężenie połowów w regionie \[ułamek
     pozostawionego narybku\])
 
 ###### Ocena korelacji:
 
-7.  Im temperatura wody jest cieplejsza tym wyławiany śledź jest
+1.  Im temperatura wody jest cieplejsza tym wyławiany śledź jest
     mniejszy. Analogicznie gdy tempeatura wody spada, średnia długość
     śledzia rośnie.
-8.  Im większe regionalne natężenie połowów w regionie, tym mniejsza
+2.  Im większe regionalne natężenie połowów w regionie, tym mniejsza
     jest liczba ryb łowionych w ramach połowu.
-9.  Im większe całkowite natężenie połowów w regionie, tym mniejsza jest
+3.  Im większe całkowite natężenie połowów w regionie, tym mniejsza jest
     liczba ryb łowionych w ramach połowu.
 
 ##### Filtracja zmiennych znacząco skorelowanych:
@@ -418,8 +487,8 @@ softly_pos
 ```
 
     ##      [,1]     [,2]   
-    ## [1,] "cumf"   "cfin2"
-    ## [2,] "lcop2"  "cfin2"
+    ## [1,] "chel2"  "cfin2"
+    ## [2,] "cumf"   "cfin2"
     ## [3,] "sst"    "X"    
     ## [4,] "totaln" "recr"
 
@@ -431,10 +500,9 @@ softly_neg
 
     ##      [,1]     [,2]    
     ## [1,] "nao"    "totaln"
-    ## [2,] "totaln" "X"     
-    ## [3,] "nao"    "lcop2" 
-    ## [4,] "length" "X"     
-    ## [5,] "nao"    "chel2"
+    ## [2,] "totaln" "chel2" 
+    ## [3,] "totaln" "X"     
+    ## [4,] "length" "X"
 
 ##### Ocena korelacji:
 
@@ -445,7 +513,8 @@ oscylacja atlantycka ma wpływ na zmniejszenie się zagęszczenia planktonu
 widłonogów gat. 2, Calanus helgolandicus gat. 2 oraz liczby wyławianych
 śledzi.
 
-## Obserwacje po łącznej analizie rozkładu danych i macierzy korelacji
+Obserwacje po łącznej analizie rozkładu danych i macierzy korelacji
+-------------------------------------------------------------------
 
 ``` r
 library(htmlwidgets)
@@ -582,7 +651,7 @@ webshot("temp.html", file = names[1],
         ,vwidth = width, vheight = height )
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 ``` r
 saveWidget(p2, "temp.html", selfcontained = FALSE)
@@ -591,7 +660,7 @@ webshot("temp.html", file = names[2],
         ,vwidth = width, vheight = height )
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ``` r
 saveWidget(p3, "temp.html", selfcontained = FALSE)
@@ -600,7 +669,7 @@ webshot("temp.html", file = names[3],
         ,vwidth = width, vheight = height )
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 Choć nie wynika to z macierzy korelacji, posiłkując się wiedzą
 dziedzinową uważamy, że im większa jest różnica pomiędzy narybkiem a
@@ -629,7 +698,7 @@ webshot("temp.html", file = names[4],
         ,vwidth = width, vheight = height )
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ``` r
 saveWidget(p5, "temp.html", selfcontained = FALSE)
@@ -638,7 +707,7 @@ webshot("temp.html", file = names[5],
         ,vwidth = width, vheight = height )
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 ``` r
 saveWidget(p6, "temp.html", selfcontained = FALSE)
@@ -647,7 +716,7 @@ webshot("temp.html", file = names[6],
         ,vwidth = width, vheight = height )
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ``` r
 saveWidget(p7, "temp.html", selfcontained = FALSE)
@@ -656,9 +725,9 @@ webshot("temp.html", file = names[7],
         ,vwidth = width, vheight = height )
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-3.  Kolejnym powodem może być wpływ oscylacji północnoatlantyckiej na
+1.  Kolejnym powodem może być wpływ oscylacji północnoatlantyckiej na
     zagęszczenie planktonu. Średnie zagęszczenie planktonu jest ujemnie
     skorelowane z oscylacją. Tylko jeden gatunek planktonu (fin1), jest
     wśród wymienianych 6-ciu pozytywnie skorelowany ze wspomnianym
@@ -669,8 +738,6 @@ webshot("temp.html", file = names[7],
     35-45 pokazuje wyraźną ujemną korelacje zagęszczenia glonów a
     temperatury wody.
 
-<!-- end list -->
-
 ``` r
 saveWidget(p8, "temp.html", selfcontained = FALSE)
 webshot("temp.html", file = names[8],
@@ -678,14 +745,14 @@ webshot("temp.html", file = names[8],
         ,vwidth = width, vheight = height )
 ```
 
-![](Herringmania_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+![](Herringmania_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 Ważnym wnioskiem po obserwacji macierzy korelacji jest także to, że
 miesiąc połowu nie jest skorelowany z żadną z wartości. Wzmacnia to
-niezależność
-badania.
+niezależność badania.
 
-## Konstrukcja regresora
+Konstrukcja regresora
+---------------------
 
 ##### Wyłuskanie tylko kolumny do przewidywania długości oraz sst, który posiada silną negatywną korelację z długością:
 
